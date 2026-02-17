@@ -60,6 +60,5 @@ class Program
         L.InsertAfterLess(x, L.Avg());
         
         File.WriteAllText("output.txt", orig + "\n" + L.Show());
-        Console.WriteLine("Готово! Результат в output.txt");
     }
 }
