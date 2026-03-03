@@ -6,53 +6,28 @@ using System.IO;
 
 namespace Example
 {
-  
     public class List
     {
-        public class Node { public int Inf; public Node Next; }
+        public class Node 
+        { 
+            public int Inf; 
+            public Node Next; 
+        }
+        
         private Node head;
         private Node tail;
-        private Node temp;
+        
         public List()
         {
             head = null;
             tail = null;
         }
-        public void Add(object nodeInfo)
-        {
-            Node n = new Node(nodeInfo);
-            if (head == null) head = tail = n;
-            else { n.Next = head; head = n; }
-        }
 
-        public double Avg()
+        public void AddEnd(int value)
         {
-            if (head == null) return 0;
-            double s = 0; int k = 0;
-            temp = head;
-            while (temp != null) { s += temp.Inf; k++; temp = temp.Next; }
-            return s / k;
-        }
-
-        public void InsertAfterLess(int x, double avg)
-        {
-            temp = head;
-            while (temp != null)
-            {
-                if (temp.Inf < avg)
-                {
-                    Node n = new Node { Inf = x, Next = temp.Next };
-                    temp.Next = n;
-                    if (temp == tail) tail = n;
-                    temp = n.Next;
-                }
-                else temp = temp.Next;
-            }
-        }
-
-        public void AddEnd(object nodeInfo)
-        {
-            Node n = new Node(nodeInfo);
+            Node n = new Node();
+            n.Inf = value;
+            
             if (head == null)
             {
                 head = n;
@@ -60,47 +35,91 @@ namespace Example
             }
             else
             {
-                n.Next = head;
-                head = n;
+                tail.Next = n;  
+                tail = n;       
             }
         }
-        public void Show()
+
+        public double Avg()
         {
+            if (head == null) return 0;
+            double s = 0; 
+            int k = 0;
+            Node temp = head;
+            while (temp != null) 
+            { 
+                s += temp.Inf; 
+                k++; 
+                temp = temp.Next; 
+            }
+            return s / k;
+        }
+
+        public void InsertAfterLess(int x, double avg)
+        {
+            Node temp = head;
+            while (temp != null)
+            {
+                if (temp.Inf < avg)
+                {
+                    Node n = new Node { Inf = x, Next = temp.Next };
+                    temp.Next = n;
+                    if (temp == tail) 
+                        tail = n;
+                    temp = n.Next;
+                }
+                else 
+                    temp = temp.Next;
+            }
+        }
+
+        public string Show()
+        {
+            string show = "";
             Node n = head; 
             while (n != null) 
             {   
-                Console.Write("{0} ", n.Inf);
+                show += n.Inf + " ";
                 n = n.Next;
             }
+            return show;
         }
     }
 
-
-
-    public class Program
+    class Program
     {
         static void Main()
         {
-            List list = new List();
-            using (StreamReader fileIn = new StreamReader("C:/Users/bykovvd/Desktop/Новая папка/20/input.txt"))
+            List L = new List();
+            
+            string[] data = File.ReadAllText("input.txt").Split(
+                new char[] { ' ', '\n', '\r' }, 
+                StringSplitOptions.RemoveEmptyEntries);
+            
+            foreach (string s in data)
             {
-                string line = fileIn.ReadToEnd();
-                string[] data = line.Split(' ');
-                foreach (string item in data)
-                {
-                    list.AddEnd(int.Parse(item));
-                }
+                L.AddEnd(int.Parse(s));
             }
-
-            Console.Write("x="); int x = int.Parse(Console.ReadLine());
-            list.InsertAfterLess(x, list.Avg());
-
-            using (StreamWriter fileOut = new StreamWriter("C:/Users/bykovvd/Desktop/Новая папка/20/output.txt"))
-            {
-                string line = fileOut.Show();
-
-            }
-                Console.ReadKey();
+            
+            string original = L.Show();
+            
+            Console.WriteLine("Исходный список:");
+            Console.WriteLine(original);
+            
+            Console.Write("x = ");
+            int x = int.Parse(Console.ReadLine());
+            
+            double avg = L.Avg();
+            Console.WriteLine("Среднее арифметическое: " + avg);
+            
+            L.InsertAfterLess(x, avg);
+            
+            Console.WriteLine("Итоговый список:");
+            Console.WriteLine(L.Show());
+            
+            File.WriteAllText("output.txt", original + "\n" + L.Show());
+            
+            Console.WriteLine("Результат сохранен в output.txt");
         }
     }
 }
